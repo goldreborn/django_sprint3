@@ -1,7 +1,5 @@
 from django.shortcuts import render, get_list_or_404, get_object_or_404
-from django.http import Http404
 from .models import Post
-from django.db.models import Q
 from django.utils import timezone
 
 now = timezone.now()
@@ -11,9 +9,9 @@ def index(request):
     template = 'blog/index.html'
 
     post_data = Post.objects.all().filter(
-        Q(is_published=True) &
-        Q(pub_date__lte=now) &
-        Q(category__is_published=True)
+        is_published=True,
+        pub_date__lte=now,
+        category__is_published=True
     ).order_by('id')[:5]
 
     context = {'post_list': post_data}
@@ -58,9 +56,9 @@ def category_posts(request, category_slug):
     }
 
     posts_in_category = Post.objects.filter(
-        Q(category__slug=category_slug) &
-        Q(pub_date__lte=now) &
-        Q(is_published=True)
+        category__slug=category_slug,
+        pub_date__lte=now,
+        is_published=True
     )
 
     query_set = get_list_or_404(

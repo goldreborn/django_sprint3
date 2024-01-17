@@ -1,5 +1,3 @@
-# cinema/models.py
-# Импортируем модуль с классом Model, от которого будем наследовать модели:
 from django.db import models
 from blog.abstractmodel import AbstractModel
 from django.contrib.auth import get_user_model
@@ -20,7 +18,8 @@ class Category(AbstractModel):
     slug = models.SlugField(
         unique=True,
         verbose_name='Идентификатор',
-        help_text='''Идентификатор страницы для URL; разрешены символы латиницы, цифры, дефис и подчёркивание.'''
+        help_text='Идентификатор страницы для URL; '
+        'разрешены символы латиницы, цифры, дефис и подчёркивание.'
     )
 
     class Meta:
