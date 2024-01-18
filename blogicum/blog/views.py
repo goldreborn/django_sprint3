@@ -1,18 +1,27 @@
 from django.shortcuts import render, get_list_or_404, get_object_or_404
-from .models import Post
-from django.utils import timezone
 
-now = timezone.now()
+from django.utils import timezone
+from .models import Post, Category
+
+POSTS_ON_MAIN = 5
+
+
+def get_query_set():
+
+    q_set = Post.objects.select_related().filter(
+        is_published=True,
+        category__is_published=True,
+        pub_date__lte=timezone.now()
+    )
+
+    return q_set
 
 
 def index(request):
+
     template = 'blog/index.html'
 
-    post_data = Post.objects.all().filter(
-        is_published=True,
-        pub_date__lte=now,
-        category__is_published=True
-    ).order_by('id')[:5]
+    post_data = get_query_set()[:POSTS_ON_MAIN]
 
     context = {'post_list': post_data}
 
@@ -24,11 +33,7 @@ def post_detail(request, post_id):
     template = 'blog/detail.html'
 
     post = get_object_or_404(
-        Post.objects.filter(
-            is_published__exact=True,
-            pub_date__lte=now,
-            category__is_published__exact=True
-        ),
+        get_query_set(),
         pk=post_id
     )
 
@@ -41,29 +46,19 @@ def category_posts(request, category_slug):
 
     template = 'blog/category.html'
 
-    category_info = {
-        'title': Post.objects.values(
-            'category__title'
+    objects = get_object_or_404(
+        Category.objects.values(
+            'title',
+            'description'
         ).filter(
-            category__slug=category_slug
-        ).first()['category__title'],
-
-        'description': Post.objects.values(
-            'category__description'
-        ).filter(
-            category__slug=category_slug
-        ).first()['category__description']
-    }
-
-    posts_in_category = Post.objects.filter(
-        category__slug=category_slug,
-        pub_date__lte=now,
-        is_published=True
+            is_published=True
+        ), slug=category_slug
     )
 
-    query_set = get_list_or_404(
-        posts_in_category,
-        category__is_published=True
+    category_info = objects
+
+    query_set = get_query_set().filter(
+        category__slug=category_slug
     )
 
     context = {

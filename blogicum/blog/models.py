@@ -1,14 +1,31 @@
 from django.db import models
-from blog.abstractmodel import AbstractModel
 from django.contrib.auth import get_user_model
 
 User = get_user_model()
+
+MAX_CHAR_LENGTH = 256
+
+class AbstractModel(models.Model):
+
+    is_published = models.BooleanField(
+        default=True,
+        verbose_name='Опубликовано',
+        help_text='Снимите галочку, чтобы скрыть публикацию.'
+    )
+
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name='Добавлено'
+    )
+
+    class Meta:
+        abstract = True
 
 
 class Category(AbstractModel):
 
     title = models.CharField(
-        max_length=256,
+        max_length=MAX_CHAR_LENGTH,
         verbose_name='Заголовок'
     )
 
@@ -30,7 +47,7 @@ class Category(AbstractModel):
 class Location(AbstractModel):
 
     name = models.CharField(
-        max_length=256,
+        max_length=MAX_CHAR_LENGTH,
         verbose_name='Название места'
     )
 
@@ -42,7 +59,7 @@ class Location(AbstractModel):
 class Post(AbstractModel):
 
     title = models.CharField(
-        max_length=256,
+        max_length=MAX_CHAR_LENGTH,
         verbose_name='Заголовок'
     )
 
@@ -57,12 +74,14 @@ class Post(AbstractModel):
     author = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
+        related_name='posts',
         verbose_name='Автор публикации'
     )
 
     location = models.ForeignKey(
         Location,
         verbose_name='Местоположение',
+        related_name='posts',
         on_delete=models.SET_NULL,
         null=True,
     )
@@ -70,6 +89,7 @@ class Post(AbstractModel):
     category = models.ForeignKey(
         Category,
         verbose_name='Категория',
+        related_name='posts',
         on_delete=models.SET_NULL,
         null=True,
     )
@@ -77,3 +97,4 @@ class Post(AbstractModel):
     class Meta:
         verbose_name = 'публикация'
         verbose_name_plural = 'Публикации'
+        ordering = ['id']
