@@ -5,6 +5,7 @@ User = get_user_model()
 
 MAX_CHAR_LENGTH = 256
 
+
 class AbstractModel(models.Model):
 
     is_published = models.BooleanField(
