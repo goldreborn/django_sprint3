@@ -8,13 +8,13 @@ POSTS_ON_MAIN = 5
 
 def get_query_set():
 
-    q_set = Post.objects.select_related().filter(
+    return Post.objects.select_related(
+        'author', 'location', 'category'
+    ).filter(
         is_published=True,
         category__is_published=True,
         pub_date__lte=timezone.now()
     )
-
-    return q_set
 
 
 def index(request):
@@ -46,7 +46,7 @@ def category_posts(request, category_slug):
 
     template = 'blog/category.html'
 
-    objects = get_object_or_404(
+    category_info = get_object_or_404(
         Category.objects.values(
             'title',
             'description'
@@ -54,8 +54,6 @@ def category_posts(request, category_slug):
             is_published=True
         ), slug=category_slug
     )
-
-    category_info = objects
 
     query_set = get_query_set().filter(
         category__slug=category_slug
