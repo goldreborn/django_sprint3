@@ -23,7 +23,6 @@ class AbstractModel(models.Model):
         abstract = True
 
 
-
 class Category(AbstractModel):
 
     title = models.CharField(
@@ -44,7 +43,7 @@ class Category(AbstractModel):
     class Meta:
         verbose_name = 'категория'
         verbose_name_plural = 'Категории'
-    
+
     def __str__(self) -> str:
         return self.title
 
@@ -59,7 +58,7 @@ class Location(AbstractModel):
     class Meta:
         verbose_name = 'местоположение'
         verbose_name_plural = 'Местоположения'
-    
+
     def __str__(self) -> str:
         return self.name
 
@@ -106,6 +105,6 @@ class Post(AbstractModel):
         verbose_name = 'публикация'
         verbose_name_plural = 'Публикации'
         ordering = ['pub_date']
-    
+
     def __str__(self) -> str:
         return self.title
